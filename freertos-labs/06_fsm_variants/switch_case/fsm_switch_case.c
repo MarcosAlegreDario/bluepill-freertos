@@ -1,3 +1,4 @@
+//Ejemplo 1
 #include "../include/fsm.h"
 #include <libopencm3/stm32/usart.h>
 
