@@ -16,10 +16,17 @@ static void send_line(const char *msg)
 
 static void gpio_setup(void)
 {
+    // 1. Configuración del LED integrado (PC13)
     rcc_periph_clock_enable(RCC_GPIOC);
     gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ,
                   GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
     gpio_clear(GPIOC, GPIO13);
+
+    // 2. NUEVO: Configuración del LED externo (PB0)
+    rcc_periph_clock_enable(RCC_GPIOB); // Habilitamos el reloj del puerto B
+    gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ,
+                  GPIO_CNF_OUTPUT_PUSHPULL, GPIO0); // PB0 como salida push-pull
+    gpio_clear(GPIOB, GPIO0); // Lo iniciamos apagado por seguridad
 }
 
 static void usart_setup(void)
@@ -43,10 +50,17 @@ static void usart_setup(void)
 
 static fsm_event_t event_from_char(char c) {
     switch (c) {
-    case '0': return (fsm_event_t){EVENT_CMD_0};
-    case '1': return (fsm_event_t){EVENT_CMD_1};
-    case '2': return (fsm_event_t){EVENT_CMD_2};
-    default:  return (fsm_event_t){EVENT_INVALID};
+    case '0': 
+        gpio_set(GPIOB, GPIO0);   // Enciende el LED externo
+        return (fsm_event_t){EVENT_CMD_0};
+    case '1': 
+        gpio_clear(GPIOB, GPIO0); // Apaga el LED externo
+        return (fsm_event_t){EVENT_CMD_1};
+    case '2': 
+        gpio_set(GPIOB, GPIO0);   // Enc0=iende el LED externo
+        return (fsm_event_t){EVENT_CMD_2};
+    default:  
+        return (fsm_event_t){EVENT_INVALID};
     }
 }
 

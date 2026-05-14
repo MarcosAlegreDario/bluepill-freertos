@@ -62,11 +62,11 @@ $(LIBOPENCM3_DIR)/lib/libopencm3_stm32f1.a:
 	$(MAKE) -C $(LIBOPENCM3_DIR)
 
 flash: $(BUILD_DIR)/$(TARGET)
-	openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program $< verify reset exit"
+	openocd -f interface/stlink.cfg -c "set CPUTAPID 0" -f target/stm32f1x.cfg -c "program $< verify reset exit"
 
 openocd:
-	openocd -f interface/stlink.cfg -f target/stm32f1x.cfg
-
+	openocd -f interface/stlink.cfg -c "set CPUTAPID 0" -f target/stm32f1x.cfg
+	
 gdb: $(BUILD_DIR)/$(TARGET)
 	gdb-multiarch $< -ex "target remote localhost:3333"
 
